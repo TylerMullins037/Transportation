@@ -3,11 +3,12 @@
 #include <iostream>
 #include <climits>
 
+using namespace std;
+
 // Helper function to find the city with the shortest distance
 string findMinDistanceCity(map<string, City>& cities, map<string, int>& distances, set<string>& unvisited) {
     string minCity;
     int minDistance = INT_MAX;
-    if(const auto & city : unvisited)
     for (const auto& city : unvisited) {
         if (distances[city] < minDistance) {
             minDistance = distances[city];
@@ -18,6 +19,7 @@ string findMinDistanceCity(map<string, City>& cities, map<string, int>& distance
     return minCity;
 }
 
+// Function to find the shortest path between two cities using Dijkstra's algorithm
 // Function to find the shortest path between two cities using Dijkstra's algorithm
 vector<string> shortestPath(map<string, City>& cities, string startCity, string endCity) {
     map<string, int> distances;
@@ -31,8 +33,15 @@ vector<string> shortestPath(map<string, City>& cities, string startCity, string 
         unvisited.insert(city);
     }
 
+    // Remove isolated cities from the unvisited set
+    vector<string> isolated = findIsolatedCities(cities);
+    for (const string& isolatedCity : isolated) {
+        unvisited.erase(isolatedCity);
+    }
+
     while (!unvisited.empty()) {
         string currentCity = findMinDistanceCity(cities, distances, unvisited);
+       
         unvisited.erase(currentCity);
 
         for (const auto& pair : cities[currentCity].connections) {
@@ -40,6 +49,7 @@ vector<string> shortestPath(map<string, City>& cities, string startCity, string 
             int distance = pair.second;
 
             int altDistance = distances[currentCity] + distance;
+
             if (altDistance < distances[neighbor]) {
                 distances[neighbor] = altDistance;
                 previous[neighbor] = currentCity;
@@ -57,8 +67,11 @@ vector<string> shortestPath(map<string, City>& cities, string startCity, string 
     path.push_back(startCity);
     reverse(path.begin(), path.end());
 
+    int totalDistance = distances[endCity];
+    cout << "Total Distance: " << totalDistance << endl;
     return path;
 }
+
 
 // Function to add a connection between two cities
 void addConnection(map<string, City>& cities, string city1, string city2, int distance, bool oneWay) {
@@ -133,3 +146,17 @@ vector<string> findIsolatedCities(map<string, City>& cities) {
 }
 
 
+// Function to display the map
+void displayMap(map<string, City>& cities) {
+    for (const auto& pair : cities) {
+        const string& cityName = pair.first;
+        const City& city = pair.second;
+
+        cout << "City: " << cityName << endl;
+        cout << "Connections:" << endl;
+        for (const auto& connection : city.connections) {
+            cout << "  To: " << connection.first << ", Distance: " << connection.second << endl;
+        }
+        cout << "-------------------------" << endl;
+    }
+}

@@ -28,4 +28,7 @@ vector<string> citiesWithinDistance(map<string, City>& cities, string startCity,
 // Function to determine if there are any isolated cities
 vector<string> findIsolatedCities(map<string, City>& cities);
 
+// Function to display the map
+void displayMap(map<string, City>& cities);
+
 #endif // TRANSPORTATION_NETWORK_H

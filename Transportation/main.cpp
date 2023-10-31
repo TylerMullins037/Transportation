@@ -19,7 +19,7 @@ int main() {
     addConnection(cities, "Astora", "Thoroland", 300, false);
     addConnection(cities, "Thoroland", "Carim", 200, false);
 
-    addConnection(cities, "Carim", "Vinheim", 200, false);
+    addConnection(cities, "Carim", "Vinheim", 200, true);
     addConnection(cities, "Vinheim", "Undead Asylum", 300, false);
     addConnection(cities, "Anor Londo", "Undead Asylum", 200, false);
 
@@ -30,7 +30,7 @@ int main() {
 
     addConnection(cities, "Heide", "Unnamed Eastern Lands", 900, false);   
     addConnection(cities, "Olaphis", "Unnamed Eastern Lands", 1000, false);
-    addConnection(cities, "Olaphis", "Heide", 1200, false);   
+    addConnection(cities, "Olaphis", "Heide", 1200, true);   
   
     addConnection(cities, "Unnamed Eastern Lands", "Far East", 1000, false); 
 
@@ -46,13 +46,17 @@ int main() {
     addConnection(cities, "Berenike", "Balder", 150, false);
     addConnection(cities, "Oolacile", "Balder", 650, false);
 
-    addConnection(cities, "Balder", "Undead Asylum", 650, false);
+    addConnection(cities, "Undead Asylum", "Balder", 650, true);
     
     addConnection(cities, "Five Finger Delta", "Catarina", 600, false);
     addConnection(cities, "The Great Swamp", "Five Finger Delta", 700, false);
     addConnection(cities, "Oolacile", "The Great Swamp", 700, false);
-     addConnection(cities, "Catarina", "Berenike", 200, false);
+    addConnection(cities, "Catarina", "Berenike", 200, false);
    
+    
+    City newCity;
+    newCity.name = "Zena";
+    cities["Zena"] = newCity;
 
 
 
@@ -94,7 +98,7 @@ int main() {
     cout << "End" << endl;
 
     // Example usage of citiesWithinDistance function
-    vector<string> citiesWithinDist = citiesWithinDistance(cities, start, 15);
+    vector<string> citiesWithinDist = citiesWithinDistance(cities, start, 300);
 
     // Output cities within a certain distance
     cout << "Cities within 15 units from StartCity: ";
@@ -112,5 +116,7 @@ int main() {
     {
         cout << city << ", ";
     }
+
+   // displayMap(cities);
     return 0;
 }
