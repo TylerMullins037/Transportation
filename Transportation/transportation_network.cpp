@@ -20,11 +20,15 @@ string findMinDistanceCity(map<string, City>& cities, map<string, int>& distance
 }
 
 // Function to find the shortest path between two cities using Dijkstra's algorithm
-// Function to find the shortest path between two cities using Dijkstra's algorithm
+
 vector<string> shortestPath(map<string, City>& cities, string startCity, string endCity) {
     map<string, int> distances;
     map<string, string> previous;
     set<string> unvisited;
+
+    if (cities.find(startCity) == cities.end() || cities.find(endCity) == cities.end()) {
+        throw invalid_argument("Start or end city not found in the network.");
+    }
 
     for (const auto& pair : cities) {
         string city = pair.first;
@@ -75,6 +79,12 @@ vector<string> shortestPath(map<string, City>& cities, string startCity, string 
 
 // Function to add a connection between two cities
 void addConnection(map<string, City>& cities, string city1, string city2, int distance, bool oneWay) {
+    if (distance < 0) {
+        throw invalid_argument("Distance cannot be negative");
+    }
+    if (city1 == city2) {
+        throw invalid_argument("Cannot add connection to itself");
+    }
     cities[city1].connections[city2] = distance;
     if (!oneWay) {
         // If it's not a one-way connection, add the reverse connection.
@@ -84,46 +94,59 @@ void addConnection(map<string, City>& cities, string city1, string city2, int di
 
 // Function to identify cities that can be reached within a certain distance
 vector<string> citiesWithinDistance(map<string, City>& cities, string startCity, int maxDistance) {
-    vector<string> reachableCities;
-
-    // Create a queue for breadth-first search
-    queue<pair<string, int>> bfsQueue;
-
-    // Initialize visited flag for all cities
-    map<string, bool> visited;
-    for (const auto& pair : cities) {
-        visited[pair.first] = false;
+    if (cities.find(startCity) == cities.end()) {
+        throw invalid_argument("Start city not found in the network.");
     }
 
-    // Add the start city to the queue
-    bfsQueue.push({ startCity, 0 });
-    visited[startCity] = true;
+    if (maxDistance > 0) {
 
-    // Perform breadth-first search
-    while (!bfsQueue.empty()) {
-        string currentCity = bfsQueue.front().first;
-        int currentDistance = bfsQueue.front().second;
-        bfsQueue.pop();
+        vector<string> reachableCities;
 
-        // Check if the current city is within the specified distance
-        if (currentDistance <= maxDistance) {
-            reachableCities.push_back(currentCity);
+        // Create a queue for breadth-first search
+        queue<pair<string, int>> bfsQueue;
 
-            // Explore neighboring cities
-            for (const auto& neighborPair : cities[currentCity].connections) {
-                string neighborCity = neighborPair.first;
-                int neighborDistance = neighborPair.second;
+        // Initialize visited flag for all cities
+        map<string, bool> visited;
+        for (const auto& pair : cities) {
+            visited[pair.first] = false;
+        }
 
-                // If the neighbor is not visited, add it to the queue
-                if (!visited[neighborCity]) {
-                    bfsQueue.push({ neighborCity, currentDistance + neighborDistance });
-                    visited[neighborCity] = true;
+        // Add the start city to the queue
+        bfsQueue.push({ startCity, 0 });
+        visited[startCity] = true;
+
+        // Perform breadth-first search
+        while (!bfsQueue.empty()) {
+            string currentCity = bfsQueue.front().first;
+            int currentDistance = bfsQueue.front().second;
+            bfsQueue.pop();
+
+            // Check if the current city is within the specified distance
+            if (currentDistance <= maxDistance) {
+                reachableCities.push_back(currentCity);
+                if (currentCity == startCity) {
+                    reachableCities.pop_back();
+                }
+
+                // Explore neighboring cities
+                for (const auto& neighborPair : cities[currentCity].connections) {
+                    string neighborCity = neighborPair.first;
+                    int neighborDistance = neighborPair.second;
+
+                    // If the neighbor is not visited, add it to the queue
+                    if (!visited[neighborCity]) {
+                        bfsQueue.push({ neighborCity, currentDistance + neighborDistance });
+                        visited[neighborCity] = true;
+                    }
                 }
             }
         }
+        return reachableCities;
     }
-
-    return reachableCities;
+    else {
+        throw invalid_argument("Distance cannot be negative.");
+    
+    }
 }
 
 // Function to determine if there are any isolated cities
@@ -148,15 +171,20 @@ vector<string> findIsolatedCities(map<string, City>& cities) {
 
 // Function to display the map
 void displayMap(map<string, City>& cities) {
-    for (const auto& pair : cities) {
-        const string& cityName = pair.first;
-        const City& city = pair.second;
+    if (!cities.empty()) {
+        for (const auto& pair : cities) {
+            const string& cityName = pair.first;
+            const City& city = pair.second;
 
-        cout << "City: " << cityName << endl;
-        cout << "Connections:" << endl;
-        for (const auto& connection : city.connections) {
-            cout << "  To: " << connection.first << ", Distance: " << connection.second << endl;
+            cout << "City: " << cityName << endl;
+            cout << "Connections:" << endl;
+            for (const auto& connection : city.connections) {
+                cout << "  To: " << connection.first << ", Distance: " << connection.second << endl;
+            }
+            cout << "-------------------------" << endl;
         }
-        cout << "-------------------------" << endl;
+    }
+    else {
+        throw invalid_argument("The cities map is empty");
     }
 }
